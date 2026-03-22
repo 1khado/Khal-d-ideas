@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خالووود 🎮</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Cairo',sans-serif; background:#060610; color:#fff; min-height:100vh; }
+.bg { position:fixed; inset:0; pointer-events:none; background:radial-gradient(ellipse 60% 40% at 80% 10%, rgba(155,0,255,0.08) 0%, transparent 60%), radial-gradient(ellipse 40% 30% at 10% 80%, rgba(0,245,160,0.06) 0%, transparent 60%); }
+
+/* SPLASH */
+#splash { position:fixed; inset:0; background:#060610; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; transition:opacity 0.5s; }
+#splash .glow1 { position:absolute; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(0,245,160,0.12) 0%, transparent 70%); top:50%; left:50%; transform:translate(-50%,-50%); }
+#splash .glow2 { position:absolute; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(155,0,255,0.1) 0%, transparent 70%); top:30%; left:55%; }
+#splash .inner { position:relative; text-align:center; animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+#splash .icon { font-size:72px; margin-bottom:16px; filter:drop-shadow(0 0 20px rgba(0,245,160,0.5)); }
+#splash h1 { font-size:32px; font-weight:900; margin:0 0 8px; background:linear-gradient(90deg,#00f5a0,#00c8ff,#9b00ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+#splash p { color:rgba(255,255,255,0.4); font-size:14px; }
+#splash .bar-wrap { margin:28px auto 0; width:160px; height:3px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+#splash .bar-fill { height:100%; background:linear-gradient(90deg,#00f5a0,#9b00ff); border-radius:10px; animation:loadBar 2.2s ease forwards; }
+
+/* MAIN */
+.container { max-width:480px; margin:0 auto; padding:20px 16px 60px; position:relative; z-index:1; }
+.ai-tag { display:inline-block; background:linear-gradient(135deg,#9b00ff,#00f5a0); color:#000; font-size:10px; font-weight:900; padding:4px 14px; border-radius:20px; letter-spacing:2px; margin-bottom:10px; }
+.app-title { font-size:26px; font-weight:900; background:linear-gradient(90deg,#fff 0%,#00f5a0 60%,#9b00ff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0; }
+.app-sub { color:rgba(255,255,255,0.35); font-size:13px; margin-top:5px; }
+header { text-align:center; margin-bottom:22px; }
+
+/* TABS */
+.tabs { display:flex; background:#0d0d1f; border-radius:16px; padding:4px; margin-bottom:18px; border:1px solid rgba(255,255,255,0.06); }
+.tab-btn { flex:1; padding:10px; border-radius:12px; border:none; background:transparent; color:rgba(255,255,255,0.4); font-family:inherit; font-size:13px; font-weight:900; cursor:pointer; transition:all 0.2s; }
+.tab-btn.active { background:linear-gradient(135deg,rgba(0,245,160,0.15),rgba(0,200,255,0.1)); color:#00f5a0; border:1px solid rgba(0,245,160,0.2); }
+
+/* SELECTS */
+.selects { display:flex; gap:10px; margin-bottom:14px; }
+select { flex:1; background:#0d0d1f; border:1px solid rgba(0,245,160,0.15); border-radius:14px; padding:11px 12px; color:#fff; font-family:inherit; font-size:13px; font-weight:700; outline:none; }
+
+/* BUTTON */
+.gen-btn { width:100%; padding:16px; margin-bottom:18px; background:linear-gradient(135deg,#00f5a0,#00c8ff); border:none; border-radius:18px; color:#000; font-family:inherit; font-size:17px; font-weight:900; cursor:pointer; box-shadow:0 0 25px rgba(0,245,160,0.25); transition:all 0.2s; }
+.gen-btn:disabled { background:rgba(0,245,160,0.3); box-shadow:none; cursor:not-allowed; }
+
+/* ERROR */
+.error-box { background:rgba(255,77,0,0.1); border:1px solid rgba(255,77,0,0.3); border-radius:14px; padding:14px 16px; margin-bottom:14px; font-size:14px; color:#ff6b35; text-align:center; }
+
+/* EMPTY */
+.empty { text-align:center; padding:50px 20px; color:rgba(255,255,255,0.2); font-size:14px; }
+.empty .big { font-size:48px; margin-bottom:12px; }
+
+/* SKELETON */
+.skeleton { background:#0d0d1f; border:1px solid rgba(0,245,160,0.07); border-radius:20px; padding:20px; margin-bottom:14px; }
+.skel-line { background:rgba(255,255,255,0.06); border-radius:6px; margin-bottom:11px; animation:pulse 1.4s ease-in-out infinite; }
+
+/* CARD */
+.card { background:#0d0d1f; border:1px solid rgba(0,245,160,0.12); border-radius:20px; overflow:hidden; margin-bottom:16px; transition:border 0.3s; }
+.card.saved-card { border-color:rgba(255,215,0,0.3); }
+.card-head { padding:15px 16px 12px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:flex-start; gap:12px; }
+.card-emoji { font-size:26px; line-height:1; flex-shrink:0; }
+.card-meta { flex:1; }
+.card-genre { font-size:10px; font-weight:700; color:#00f5a0; letter-spacing:1.5px; margin-bottom:4px; }
+.card-title { font-size:15px; font-weight:900; line-height:1.35; }
+.card-actions { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+.badge { padding:5px 10px; border-radius:30px; font-size:12px; font-weight:900; }
+.badge.hot { background:rgba(255,77,0,0.15); color:#ff6b35; border:1px solid rgba(255,77,0,0.35); }
+.badge.good { background:rgba(0,245,160,0.1); color:#00f5a0; border:1px solid rgba(0,245,160,0.3); }
+.badge.rising { background:rgba(155,0,255,0.12); color:#c96fff; border:1px solid rgba(155,0,255,0.3); }
+.star-btn { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; font-size:14px; padding:4px 10px; cursor:pointer; transition:all 0.2s; }
+.star-btn.starred { background:rgba(255,215,0,0.15); border-color:rgba(255,215,0,0.4); }
+
+.card-body { padding:15px 16px; display:flex; flex-direction:column; gap:13px; }
+.label { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:1.5px; margin-bottom:5px; }
+.label-bar { width:3px; height:12px; background:#00f5a0; border-radius:2px; }
+.info-text { font-size:13px; color:rgba(255,255,255,0.8); line-height:1.65; }
+
+.progress-row { display:flex; justify-content:space-between; margin:6px 0 5px; }
+.progress-sub { font-size:11px; color:rgba(255,255,255,0.3); }
+.progress-pct { font-weight:900; font-size:14px; }
+.progress-pct.hot { color:#ff6b35; }
+.progress-pct.good { color:#00f5a0; }
+.progress-bg { height:6px; background:rgba(255,255,255,0.07); border-radius:10px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:10px; }
+.progress-fill.hot { background:linear-gradient(90deg,#ff4d00,#ffaa00); }
+.progress-fill.good { background:linear-gradient(90deg,#00f5a0,#00c8ff); }
+
+.proof-item { display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,255,255,0.75); margin-bottom:6px; }
+.proof-dot { width:6px; height:6px; border-radius:50%; background:#00f5a0; flex-shrink:0; }
+.challenges { display:flex; flex-wrap:wrap; gap:7px; margin-top:8px; }
+.chip { background:rgba(155,0,255,0.12); border:1px solid rgba(155,0,255,0.25); color:#c96fff; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; }
+
+.btn-row { display:flex; gap:8px; margin-top:2px; }
+.copy-btn, .save-btn { flex:1; padding:10px; border-radius:12px; font-family:inherit; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+.copy-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:rgba(255,255,255,0.45); }
+.copy-btn.copied { background:rgba(0,245,160,0.1); border-color:#00f5a0; color:#00f5a0; }
+.save-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:rgba(255,255,255,0.45); }
+.save-btn.starred { background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3); color:#ffd700; }
+
+/* SAVED TAB */
+.saved-empty { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.2); font-size:14px; }
+.saved-empty .big { font-size:48px; margin-bottom:12px; }
+.saved-item { background:#0d0d1f; border:1px solid rgba(255,215,0,0.2); border-radius:18px; overflow:hidden; margin-bottom:14px; }
+.saved-item-head { padding:14px 16px 10px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:10px; }
+.del-btn { background:rgba(255,77,0,0.1); border:1px solid rgba(255,77,0,0.25); border-radius:10px; color:#ff6b35; font-size:12px; padding:5px 10px; cursor:pointer; font-family:inherit; font-weight:700; }
+.saved-item-desc { padding:12px 16px; font-size:13px; color:rgba(255,255,255,0.75); line-height:1.6; }
+
+@keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+@keyframes loadBar { from{width:0%} to{width:100%} }
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="glow1"></div>
+  <div class="glow2"></div>
+  <div class="inner">
+    <div class="icon">🎮</div>
+    <h1>خالووود 🎮</h1>
+    <p>مولّد أفكار الجيمنج بالـ AI 🔥</p>
+    <div class="bar-wrap"><div class="bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+  <header>
+    <div class="ai-tag">🤖 AI POWERED</div>
+    <h1 class="app-title">خالووود 🎮</h1>
+    <p class="app-sub">أفكار جيمنج فيروسية بالـ AI 🔥</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('home',this)">🏠 الرئيسية</button>
+    <button class="tab-btn" onclick="switchTab('saved',this)" id="savedTabBtn">⭐ المحفوظات</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="homeTab">
+    <div class="selects">
+      <select id="platform">
+        <option value="">📱 كل المنصات</option>
+        <option value="youtube">▶️ يوتيوب</option>
+        <option value="tiktok">🎵 تيك توك</option>
+        <option value="instagram">📸 انستجرام</option>
+      </select>
+      <select id="genre">
+        <option value="">🎮 كل الجانرات</option>
+        <option value="fps">🔫 FPS</option>
+        <option value="moba">⚔️ MOBA</option>
+        <option value="battle royale">🏆 Battle Royale</option>
+        <option value="rpg">🧙 RPG</option>
+        <option value="mobile">📱 موبايل</option>
+      </select>
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="generate()">⚡ ولّد أفكار نار دلوقتي</button>
+
+    <div id="errorBox" class="error-box" style="display:none"></div>
+
+    <div id="emptyState" class="empty">
+      <div class="big">🎯</div>
+      اضغط الزر وهيجيلك 3 أفكار محللة 🔥
+    </div>
+
+    <div id="skeletons" style="display:none">
+      <div class="skeleton"><div class="skel-line" style="height:18px;width:80%"></div><div class="skel-line" style="height:11px;width:55%"></div><div class="skel-line" style="height:11px;width:90%"></div></div>
+      <div class="skeleton" style="opacity:0.7"><div class="skel-line" style="height:18px;width:70%"></div><div class="skel-line" style="height:11px;width:60%"></div><div class="skel-line" style="height:11px;width:80%"></div></div>
+      <div class="skeleton" style="opacity:0.4"><div class="skel-line" style="height:18px;width:75%"></div><div class="skel-line" style="height:11px;width:50%"></div><div class="skel-line" style="height:11px;width:85%"></div></div>
+    </div>
+
+    <div id="ideasContainer"></div>
+  </div>
+
+  <!-- SAVED -->
+  <div id="savedTab" style="display:none">
+    <div id="savedContent"></div>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `رد فقط بـ JSON بدون أي نص خارجه. ولّد 3 أفكار محتوى جيمنج عربية.
+{"ideas":[{"emoji":"🎮","genre":"نوع","title":"عنوان","description":"جملتين","why":"جملة","reason":"جملة","successRate":85,"successLabel":"نار 🔥","successType":"hot","proof":["دليل1","دليل2"],"challenges":["تحدي1","تحدي2"]}]}
+successType: hot اعلى من 85، good بين 70-85، rising اقل من 70. النصوص عربي ما عدا اسماء الالعاب.`;
+
+let saved = [];
+let currentIdeas = [];
+
+// Splash
+setTimeout(() => {
+  const splash = document.getElementById('splash');
+  splash.style.opacity = '0';
+  setTimeout(() => splash.style.display = 'none', 500);
+}, 2600);
+
+// Tabs
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('homeTab').style.display = tab === 'home' ? 'block' : 'none';
+  document.getElementById('savedTab').style.display = tab === 'saved' ? 'block' : 'none';
+  if (tab === 'saved') renderSaved();
+}
+
+// Generate
+async function generate() {
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ بيحلل الترندات...';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('ideasContainer').innerHTML = '';
+  document.getElementById('skeletons').style.display = 'block';
+
+  const platform = document.getElementById('platform').value;
+  const genre = document.getElementById('genre').value;
+  const ctx = [platform && `منصة: ${platform}`, genre && `جانر: ${genre}`].filter(Boolean).join(' - ');
+  const userPrompt = `ولّد 3 أفكار محتوى جيمنج فيروسية ${ctx ? `(${ctx})` : ''}.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error?.message || 'API Error ' + res.status);
+    const text = data.content?.map(i => i.text || '').join('') || '';
+    if (!text) throw new Error('رد فاضي من الـ API');
+    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+    currentIdeas = parsed.ideas || [];
+    renderIdeas(currentIdeas);
+  } catch(e) {
+    const eb = document.getElementById('errorBox');
+    eb.textContent = '❌ ' + e.message;
+    eb.style.display = 'block';
+  } finally {
+    document.getElementById('skeletons').style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '⚡ ولّد أفكار جديدة';
+  }
+}
+
+function renderIdeas(ideas) {
+  const container = document.getElementById('ideasContainer');
+  container.innerHTML = '';
+  ideas.forEach((idea, i) => {
+    const isSaved = saved.some(s => s.title === idea.title);
+    const isHot = idea.successRate >= 85;
+    const div = document.createElement('div');
+    div.className = `card${isSaved ? ' saved-card' : ''}`;
+    div.id = `card-${i}`;
+    div.style.animation = `slideUp 0.4s ease ${i * 0.08}s both`;
+    div.innerHTML = `
+      <div class="card-head">
+        <span class="card-emoji">${idea.emoji}</span>
+        <div class="card-meta">
+          <div class="card-genre">${idea.genre}</div>
+          <div class="card-title">${idea.title}</div>
+        </div>
+        <div class="card-actions">
+          <span class="badge ${idea.successType}">${idea.successLabel}</span>
+          <button class="star-btn ${isSaved ? 'starred' : ''}" onclick="toggleSave(${i})">${isSaved ? '⭐' : '☆'}</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div><div class="label"><div class="label-bar"></div>شرح الفكرة</div><p class="info-text">${idea.description}</p></div>
+        <div><div class="label"><div class="label-bar"></div>ليه اخترت دي</div><p class="info-text">${idea.why}</p></div>
+        <div><div class="label"><div class="label-bar"></div>سبب الاختيار</div><p class="info-text">${idea.reason}</p></div>
+        <div>
+          <div class="label"><div class="label-bar"></div>نسبة النجاح</div>
+          <div class="progress-row"><span class="progress-sub">مبني على تحليل الترند</span><span class="progress-pct ${isHot ? 'hot' : 'good'}">${idea.successRate}%</span></div>
+          <div class="progress-bg"><div class="progress-fill ${isHot ? 'hot' : 'good'}" style="width:${idea.successRate}%"></div></div>
+        </div>
+        <div>
+          <div class="label"><div class="label-bar"></div>دليل النجاح</div>
+          ${(idea.proof||[]).map(p => `<div class="proof-item"><div class="proof-dot"></div>${p}</div>`).join('')}
+        </div>
+        <div>
+          <div class="label"><div class="label-bar"></div>تحديات نار 🔥</div>
+          <div class="challenges">${(idea.challenges||[]).map(c => `<span class="chip">${c}</span>`).join('')}</div>
+        </div>
+        <div class="btn-row">
+          <button class="copy-btn" id="copy-${i}" onclick="copyIdea(${i})">📋 انسخ</button>
+          <button class="save-btn ${isSaved ? 'starred' : ''}" id="savebtn-${i}" onclick="toggleSave(${i})">${isSaved ? '⭐ محفوظة' : '☆ احفظ'}</button>
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function copyIdea(i) {
+  const idea = currentIdeas[i];
+  const text = `🎮 ${idea.title}\n\n📌 الفكرة: ${idea.description}\n\n✅ ليه: ${idea.why}\n\n📊 نسبة النجاح: ${idea.successRate}%\n\n💡 السبب: ${idea.reason}`;
+  const btn = document.getElementById(`copy-${i}`);
+  function done() { btn.textContent = '✅ اتنسخ!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = '📋 انسخ'; btn.classList.remove('copied'); }, 2000); }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallback(text, done));
+    } else { fallback(text, done); }
+  } catch(e) { fallback(text, done); }
+}
+
+function fallback(text, done) {
+  const el = document.createElement('textarea');
+  el.value = text; el.style.position = 'fixed'; el.style.opacity = '0';
+  document.body.appendChild(el); el.focus(); el.select();
+  try { document.execCommand('copy'); done(); } catch(e) {}
+  document.body.removeChild(el);
+}
+
+function toggleSave(i) {
+  const idea = currentIdeas[i];
+  const idx = saved.findIndex(s => s.title === idea.title);
+  if (idx >= 0) saved.splice(idx, 1);
+  else saved.push(idea);
+  updateSavedBadge();
+  renderIdeas(currentIdeas);
+}
+
+function updateSavedBadge() {
+  const btn = document.getElementById('savedTabBtn');
+  btn.textContent = saved.length > 0 ? `⭐ المحفوظات (${saved.length})` : '⭐ المحفوظات';
+}
+
+function renderSaved() {
+  const c = document.getElementById('savedContent');
+  if (saved.length === 0) {
+    c.innerHTML = `<div class="saved-empty"><div class="big">🔖</div><p>لسه مش حفظت أي فكرة<br>اضغط ⭐ على أي فكرة تعجبك</p></div>`;
+    return;
+  }
+  c.innerHTML = saved.map((idea, i) => `
+    <div class="saved-item">
+      <div class="saved-item-head">
+        <span style="font-size:24px">${idea.emoji}</span>
+        <div style="flex:1">
+          <div style="font-size:10px;color:#00f5a0;font-weight:700;margin-bottom:3px">${idea.genre}</div>
+          <div style="font-size:14px;font-weight:900">${idea.title}</div>
+        </div>
+        <button class="del-btn" onclick="deleteSaved(${i})">🗑️ احذف</button>
+      </div>
+      <div class="saved-item-desc">${idea.description}</div>
+    </div>`).join('');
+}
+
+function deleteSaved(i) {
+  saved.splice(i, 1);
+  updateSavedBadge();
+  renderSaved();
+}
+</script>
+</body>
+  </html>
