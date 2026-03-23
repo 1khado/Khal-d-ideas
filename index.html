@@ -296,22 +296,14 @@ async function generate() {
   const userPrompt = `ولّد 3 أفكار محتوى جيمنج فيروسية ${ctx ? `(${ctx})` : ''}.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
+      body: JSON.stringify({ platform, genre })
     });
     const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error?.message || 'API Error ' + res.status);
-    const text = data.content?.map(i => i.text || '').join('') || '';
-    if (!text) throw new Error('رد فاضي من الـ API');
-    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-    currentIdeas = parsed.ideas || [];
+    if (!res.ok || data.error) throw new Error(data.error || 'API Error ' + res.status);
+    currentIdeas = data.ideas || [];
     renderIdeas(currentIdeas);
   } catch(e) {
     const eb = document.getElementById('errorBox');
