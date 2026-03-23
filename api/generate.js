@@ -44,7 +44,7 @@ const IDEAS_EN = [
   {emoji:"🎯",genre:"Mobile",title:"Best Sensitivity Settings in PUBG Mobile!",description:"Detailed explanation of the best sensitivity settings in PUBG Mobile for all play styles.",why:"Best Sensitivity PUBG Mobile is top search term",reason:"Every PUBG Mobile player looks for the perfect sensitivity",successRate:87,successLabel:"Fire 🔥",successType:"hot",proof:["PUBG Mobile Sensitivity Guide is top content","One of the most asked questions in PUBG Mobile community"],challenges:["Gyroscope sensitivity","Sensitivity for low-end device","Pro player sensitivity"]}
 ];
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
