@@ -1,8 +1,6 @@
 {
-  "functions": {
-    "api/generate.js": {
-      "memory": 128,
-      "maxDuration": 10
-    }
-  }
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
+    { "source": "/robots.txt", "destination": "/robots.txt" }
+  ]
 }
